@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.stats as stats
+from src.EZDiffusionModel import EZDiffusionModel
 
 class SimulateAndRecover:
     def __init__(self, true_params, N_values, num_trials=1000):
