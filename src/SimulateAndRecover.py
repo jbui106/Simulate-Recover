@@ -1,3 +1,4 @@
+import numpy as np
 from EZDiffusionModel import EZDiffusionModel
 
 # Function to simulate and recover parameters over multiple iterations
