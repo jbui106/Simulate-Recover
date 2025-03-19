@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.stats as stats
-from src.EZDiffusionModel import EZDiffusionModel
+from EZDiffusionModel import EZDiffusionModel
 
 class SimulateAndRecover:
     def __init__(self, true_params, N_values, num_trials=1000):
@@ -66,6 +66,12 @@ class SimulateAndRecover:
         avg_squared_error_v = np.mean(self.squared_errors['v'])
         avg_squared_error_a = np.mean(self.squared_errors['a'])
         avg_squared_error_tau = np.mean(self.squared_errors['tau'])
+
+        print(f"\nAverage Bias:")
+        print(f"  v: {avg_bias_v:.4f}, a: {avg_bias_a:.4f}, tau: {avg_bias_tau:.4f}")
+        
+        print(f"\nAverage Squared Error:")
+        print(f"  v: {avg_squared_error_v:.4f}, a: {avg_squared_error_a:.4f}, tau: {avg_squared_error_tau:.4f}")
 
         return {
             'avg_bias': {'v': avg_bias_v, 'a': avg_bias_a, 'tau': avg_bias_tau},

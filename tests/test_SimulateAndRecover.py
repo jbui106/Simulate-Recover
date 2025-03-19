@@ -1,8 +1,7 @@
 import unittest
 import numpy as np
-from src.EZDiffusionModel import EZDiffusionModel
-from src.SimulateAndRecover import SimulateAndRecover
-
+from ..src.EZDiffusionModel import EZDiffusionModel
+from ..src.SimulateAndRecover import SimulateAndRecover
 
 class TestEZDiffusionModel(unittest.TestCase):
     
