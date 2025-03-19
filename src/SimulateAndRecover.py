@@ -1,4 +1,4 @@
-from models.ez_diffusion import EZDiffusionModel
+from EZDiffusionModel import EZDiffusionModel
 
 # Function to simulate and recover parameters over multiple iterations
 class SimulateAndRecover:
