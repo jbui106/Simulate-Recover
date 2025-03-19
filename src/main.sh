@@ -2,6 +2,9 @@
 
 # This script will run the EZDiffusionModel and then execute the simulate and recover process.
 
+# Install dependencies from requirements.txt
+pip install -r requirements.txt
+
 # Run the EZDiffusionModel script
 python3 EZDiffusionModel.py
 
