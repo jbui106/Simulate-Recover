@@ -25,4 +25,4 @@ else
     exit 1
 fi
 
-echo "OK"
+echo "Finished"
