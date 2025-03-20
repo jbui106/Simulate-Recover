@@ -1,104 +1,115 @@
 import unittest
 import numpy as np
-from src.SimulateAndRecover import SimulateAndRecover
 from src.EZDiffusionModel import EZDiffusionModel
+from src.SimulateAndRecover import SimulateAndRecover
+
 
 class TestSimulateAndRecover(unittest.TestCase):
 
-    # 1. Setup and Initialization Test
-    def test_initialization_with_random_params(self):
-        # Create an instance of SimulateAndRecover without providing any parameters
-        sar = SimulateAndRecover()
+    def test_initialization(self):
+        # Test initialization with default parameters
+        simulator = SimulateAndRecover()
+        
+        # Check that random params are generated correctly
+        self.assertTrue(0.5 <= simulator.true_v <= 2.0)
+        self.assertTrue(0.5 <= simulator.true_a <= 2.0)
+        self.assertTrue(0.1 <= simulator.true_tau <= 0.5)
 
-        # Check that the true parameters are set (should be random values)
-        self.assertTrue(0.5 <= sar.true_v <= 2.0)
-        self.assertTrue(0.5 <= sar.true_a <= 2.0)
-        self.assertTrue(0.1 <= sar.true_tau <= 0.5)
+        # Test initialization with specific parameters
+        true_params = (1.0, 1.5, 0.3)
+        simulator = SimulateAndRecover(true_params=true_params)
+        
+        self.assertEqual(simulator.true_v, 1.0)
+        self.assertEqual(simulator.true_a, 1.5)
+        self.assertEqual(simulator.true_tau, 0.3)
 
-    def test_initialization_with_given_params(self):
-        # Provide specific parameters
-        true_params = (1.2, 1.5, 0.3)
-        sar = SimulateAndRecover(true_params=true_params)
+    def test_bias_and_squared_error(self):
+        # Test the calculation of bias and squared error
+        simulator = SimulateAndRecover(true_params=(1.0, 1.5, 0.3))
+        
+        # Simulating data
+        N = 40
+        simulator.simulate_and_recover()
 
-        # Check that the true parameters match the provided values
-        self.assertEqual(sar.true_v, 1.2)
-        self.assertEqual(sar.true_a, 1.5)
-        self.assertEqual(sar.true_tau, 0.3)
+        # Check if the biases and squared errors are calculated correctly
+        biases = simulator.biases[N]
+        squared_errors = simulator.squared_errors[N]
 
-    # 2. Prediction Test
-    def test_simulate_and_recover(self):
-        # Using arbitrary parameters for the test
-        true_params = (1.2, 1.5, 0.3)
-        sar = SimulateAndRecover(true_params=true_params, N_values=[10])
+        # Assert that the lists are not empty
+        self.assertGreater(len(biases['v']), 0)
+        self.assertGreater(len(biases['a']), 0)
+        self.assertGreater(len(biases['tau']), 0)
 
-        # Run the simulation and recovery
-        results = sar.simulate_and_recover()
+        self.assertGreater(len(squared_errors['v']), 0)
+        self.assertGreater(len(squared_errors['a']), 0)
+        self.assertGreater(len(squared_errors['tau']), 0)
 
-        # Ensure that results are returned as expected
+    def test_prediction(self):
+        # Test that the EZDiffusionModel's predicted statistics are correct
+        model = EZDiffusionModel(1.0, 1.5, 0.3)
+        R_pred, M_pred, V_pred = model.forward_equations()
+
+        # Test that predictions are returned as expected (accuracy, mean RT, variance RT)
+        self.assertIsInstance(R_pred, float)
+        self.assertIsInstance(M_pred, float)
+        self.assertIsInstance(V_pred, float)
+
+        # Ensure that the predicted accuracy is between 0 and 1
+        self.assertGreaterEqual(R_pred, 0)
+        self.assertLessEqual(R_pred, 1)
+
+    def test_parameter_estimation(self):
+        # Test the parameter recovery using the inverse equations
+        model = EZDiffusionModel(1.0, 1.5, 0.3)
+        
+        # Simulate some noisy data
+        N = 40
+        R_pred, M_pred, V_pred = model.forward_equations()
+        R_obs, M_obs, V_obs = model.simulate_noisy_data(N, R_pred, M_pred, V_pred)
+
+        # Estimate parameters from the observed data
+        v_est, a_est, tau_est = model.inverse_equations(R_obs, M_obs, V_obs)
+
+        # Ensure that the estimated parameters are close to the true values
+        self.assertAlmostEqual(v_est, 1.0, delta=0.2)
+        self.assertAlmostEqual(a_est, 1.5, delta=0.2)
+        self.assertAlmostEqual(tau_est, 0.3, delta=0.1)
+
+    def test_integration(self):
+        # Test the full simulation and recovery integration
+        simulator = SimulateAndRecover(true_params=(1.0, 1.5, 0.3))
+        
+        # Run the full simulation and recovery process
+        results = simulator.simulate_and_recover()
+
+        # Ensure the results contain average biases and squared errors
         self.assertIn('avg_bias', results)
         self.assertIn('avg_squared_error', results)
 
-        # Check if results for N=10 are available
-        self.assertIn(10, results['avg_bias'])
-        self.assertIn(10, results['avg_squared_error'])
+        # Check that the averages for each parameter (v, a, tau) are available
+        self.assertIn('v', results['avg_bias'])
+        self.assertIn('a', results['avg_bias'])
+        self.assertIn('tau', results['avg_bias'])
 
-        # Check the results contain valid numbers
-        self.assertIsInstance(results['avg_bias'][10], dict)
-        self.assertIsInstance(results['avg_squared_error'][10], dict)
+        self.assertIn('v', results['avg_squared_error'])
+        self.assertIn('a', results['avg_squared_error'])
+        self.assertIn('tau', results['avg_squared_error'])
 
-    # 3. Parameter Estimation Test
-    def test_parameter_estimation(self):
-        true_params = (1.2, 1.5, 0.3)
-        sar = SimulateAndRecover(true_params=true_params, N_values=[10])
+    def test_corruption(self):
+        # Test if the model handles corrupted data (e.g., NaN, extreme values)
+        model = EZDiffusionModel(1.0, 1.5, 0.3)
 
-        # Run the simulation
-        results = sar.simulate_and_recover()
+        # Create corrupted (NaN) data
+        R_obs, M_obs, V_obs = np.nan, np.nan, np.nan
 
-        # Extract the bias and squared errors
-        avg_bias = results['avg_bias'][10]
-        avg_squared_error = results['avg_squared_error'][10]
-
-        # Test if bias and squared errors are computed (they should be numeric)
-        self.assertIsInstance(avg_bias['v'], float)
-        self.assertIsInstance(avg_bias['a'], float)
-        self.assertIsInstance(avg_bias['tau'], float)
-
-        self.assertIsInstance(avg_squared_error['v'], float)
-        self.assertIsInstance(avg_squared_error['a'], float)
-        self.assertIsInstance(avg_squared_error['tau'], float)
-
-    # 4. Integration Test
-    def test_integration(self):
-        true_params = (1.2, 1.5, 0.3)
-        sar = SimulateAndRecover(true_params=true_params, N_values=[10])
-
-        # Check if the EZDiffusionModel is correctly instantiated
-        model = EZDiffusionModel(sar.true_a, sar.true_v, sar.true_tau)
-        self.assertIsInstance(model, EZDiffusionModel)
-
-        # Check if the model can produce the forward equations without error
-        R_pred, M_pred, V_pred = model.forward_equations()
-        self.assertIsInstance(R_pred, np.ndarray)
-        self.assertIsInstance(M_pred, np.ndarray)
-        self.assertIsInstance(V_pred, np.ndarray)
-
-        # Check if the model can simulate noisy data
-        R_obs, M_obs, V_obs = model.simulate_noisy_data(10, R_pred, M_pred, V_pred)
-        self.assertIsInstance(R_obs, np.ndarray)
-        self.assertIsInstance(M_obs, np.ndarray)
-        self.assertIsInstance(V_obs, np.ndarray)
-
-        # Run the parameter estimation with the model
-        v_est, a_est, tau_est = model.inverse_equations(R_obs, M_obs, V_obs)
-        self.assertIsInstance(v_est, float)
-        self.assertIsInstance(a_est, float)
-        self.assertIsInstance(tau_est, float)
-
-    # 5. Corruption Test
-    def test_invalid_parameters(self):
-        # Test if the system handles invalid parameters
+        # Try to recover parameters and ensure it raises an error or handles NaN values
         with self.assertRaises(ValueError):
-            SimulateAndRecover(true_params=(-1.0, -1.5, -0.3))  # Negative params
+            model.inverse_equations(R_obs, M_obs, V_obs)
 
-if __name__ == "__main__":
+        # Now test with extreme values
+        R_obs, M_obs, V_obs = np.inf, -np.inf, np.inf
+        with self.assertRaises(ValueError):
+            model.inverse_equations(R_obs, M_obs, V_obs)
+
+if __name__ == '__main__':
     unittest.main()
