@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Install dependencies from requirements.txt
-pip3 install -r requirements.txt
-
 # Change to appropriate directory 
 cd /workspace/simulateRecover/Simulate-Recover/src/
 
