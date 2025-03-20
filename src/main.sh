@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Change to appropriate directory 
-cd /workspace/simulateRecover/Simulate-Recover/src/
-
 # Run the EZDiffusionModel script
 python3 EZDiffusionModel.py
 
@@ -14,7 +11,7 @@ else
     exit 1
 fi
 
-# Now, run the simulate and recover process
+# Run the SimulateAndRecover script
 python3 SimulateAndRecover.py
 
 # Check if the second script was successful
