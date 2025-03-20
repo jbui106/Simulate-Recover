@@ -3,7 +3,7 @@ import numpy as np
 from EZDiffusionModel import EZDiffusionModel
 from SimulateAndRecover import SimulateAndRecover
 
-class TestSimulateAndRecover(unittest.TestCase):
+class TestSimulateAndRecoverSecond(unittest.TestCase):
 
     def setUp(self):
         # Test parameters
