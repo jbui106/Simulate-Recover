@@ -4,14 +4,8 @@ from EZDiffusionModel import EZDiffusionModel
 
 class SimulateAndRecover:
     def __init__(self, true_params, N_values, num_trials=1000):
-        """
-        Initialize the simulator with true model parameters, sample sizes, and number of trials.
-        :param true_params: Tuple of (v, a, tau), the true model parameters.
-        :param N_values: List of sample sizes (e.g., [10, 40, 4000]).
-        :param num_trials: The number of trials to run for each sample size (default is 1000).
-        """
         self.true_v, self.true_a, self.true_tau = true_params
-        self.N_values = N_values
+        self.N_values = [10,40,4000]
         self.num_trials = num_trials
         self.biases = {'v': [], 'a': [], 'tau': []}
         self.squared_errors = {'v': [], 'a': [], 'tau': []}
@@ -23,17 +17,17 @@ class SimulateAndRecover:
         """
         for N in self.N_values:
             for _ in range(self.num_trials):
-                # Step 1: Create model and get predicted summary statistics
+                # Create model and get predicted summary statistics
                 model = EZDiffusionModel(self.true_a, self.true_v, self.true_tau)
                 R_pred, M_pred, V_pred = model.forward_equations()
 
-                # Step 2: Simulate noisy observed summary statistics
+                # Simulate noisy observed summary statistics
                 R_obs, M_obs, V_obs = model.simulate_noisy_data(N, R_pred, M_pred, V_pred)
 
-                # Step 3: Recover parameters using inverse equations
+                # Recover parameters using inverse equations
                 v_est, a_est, tau_est = model.inverse_equations(R_obs, M_obs, V_obs)
 
-                # Step 4: Compute biases and squared errors
+                # Compute biases and squared errors
                 bias_v = self.true_v - v_est
                 bias_a = self.true_a - a_est
                 bias_tau = self.true_tau - tau_est
