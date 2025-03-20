@@ -1,12 +1,13 @@
-# Simulate-and-Recover
+This is a project by Jeslyn Bui programming a simulation and recovery exercise for the EZ Diffusion Model.
 
-This is a project by Jeslyn Bui programming a Simulate and Recover exercise for the EZ Diffusion Model.
+Within the **src folder** there are two python files called EZDiffusionModel and SimulateAndRecover. The **EZDiffusionModel** file implements the appropriate forward equations, inverse equations, and sampling distribution equations. The **SimulateAndRecover** file simulates the data given the appropriate model parameters under project requirements and also computes the bias and squared error. There is also a main.sh script to run the program, a init file to to initialize project code.
 
-Within the **src folder** there is a python file for the EZdiffusion model and SimulateRecover. There is also a bash script to run the program, a init file to to initalize my project code, and a requirements text file for the necessary python packages.
+Within the **tests folder** there are two python files for test_EZDiffusionModel and test_SimulateAndRecover. The **test_EZDiffusionModel** file implements tests to check over the EZDiffusionModel file and check for any places for code errors or breaks. The **test_SimulateAndRecover** file similarly implements tests to check over the SimulateAndRecover file and check for any places for code errors or breaks. There is also a tests.sh script to run the program, a init file to to initialize project code.
 
-Within the **tests folder** there is python file for test_SimulateRecover and a another init python file. 
+Additionally, outside there is another init file and a requirements text file for the necessary python packages.
 
-I have used ChatGPT to aid with creating my EZdiffusion, SimulateRecover, and test_SimulateRecover code to meet project requirements.
+I have used ChatGPT to aid with creating my python files for EZDiffusionModel, SimulateAndRecover, test_EZDiffusionModel, test_SimulateAndRecover, and bash scripts in order to meet project requirements.
 
-The purpose of the simulate and recover exercise ... 
-
+Given my understanding of the simulate and recover exercise, the first portion of this project involves implementing the EZ diffusion model which represents one way to analyze how humans make decisions over time using three parameters. The first parameter, drift rate, represents the speed of evidence accumulation or in other words the time taken for people to process information. The boundary separation represents the range between the thresholds between making the two possible decisions. With the general understanding that a larger boundary separation typically means longer time for decision making but with more accuracy. The nondecision time parameter accounts for the short period individuals have not processed any information yet and have not started any decision making. These parameters are reflected further as statistics to get accuracy rate, mean response times, and variance response times. Specifically in the context of our project we get these statistics through implementing the forward equations, inverse equations, and sampling distributions equations, which overall express the predicted summary statistics, observed summary statistics, and estimated parameters. The statistics are then also further evaluated for bias and squared error in order to see how well the model is able to make predictions compared to the generated real values.  
+ 
+The simulation and recovery process works to ensure that we can simulate trials from the model and test how well the parameter recovery process works under different conditions and sample sizes. Furthermore we create unit tests as per usual to ensure that our implementation of the EZ diffusion model and simulation and recovery in this case is programmed correctly and create results that follow under the model parameters and other requirements or that would otherwise notify errors or breaks.  
