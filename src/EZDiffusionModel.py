@@ -3,12 +3,6 @@ import scipy.stats as stats
 
 class EZDiffusionModel:
     def __init__(self, boundary, drift_rate, non_decision_time):
-        """
-        Initialize the EZ Diffusion Model with given parameters.
-        :param boundary: Boundary separation (alpha)
-        :param drift_rate: Drift rate (v)
-        :param non_decision_time: Non-decision time (tau)
-        """
         self.boundary = boundary
         self.drift_rate = drift_rate
         self.non_decision_time = non_decision_time
