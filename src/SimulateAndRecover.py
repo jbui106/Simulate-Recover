@@ -2,14 +2,31 @@ import numpy as np
 from EZDiffusionModel import EZDiffusionModel
 
 class SimulateAndRecover:
-    def __init__(self, true_params, N_values=[10, 40, 4000], num_trials=1000):
-        self.true_v, self.true_a, self.true_tau = true_params
-        self.N_values = N_values 
+    def __init__(self, true_params=None, N_values=[10, 40, 4000], num_trials=1000):
+        # If true_params is None, generate random parameters
+        if true_params is None:
+            self.true_v, self.true_a, self.true_tau = self.generate_random_params()
+        else:
+            self.true_v, self.true_a, self.true_tau = true_params
+            
+        self.N_values = N_values
         self.num_trials = num_trials
         
         # Initialize dictionaries to store results by N value
         self.biases = {N: {'v': [], 'a': [], 'tau': []} for N in self.N_values}
         self.squared_errors = {N: {'v': [], 'a': [], 'tau': []} for N in self.N_values}
+    
+    def generate_random_params(self):
+        #Generate random model parameters within the specified ranges.
+        v = np.random.uniform(0.5, 2.0)  # Drift rate between 0.5 and 2
+        a = np.random.uniform(0.5, 2.0)  # Boundary separation between 0.5 and 2
+        tau = np.random.uniform(0.1, 0.5)  # Nondecision time between 0.1 and 0.5
+        
+        print(f"  Drift rate (v): {v:.4f}")
+        print(f"  Boundary separation (a): {a:.4f}")
+        print(f"  Nondecision time (tau): {tau:.4f}")
+        
+        return v, a, tau
 
     def simulate_and_recover(self):
         """
