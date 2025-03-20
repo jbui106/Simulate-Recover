@@ -11,7 +11,6 @@ class TestEZDiffusionModel(unittest.TestCase):
         t = np.random.uniform(0.1, 0.5)  # Nondecision time
         return a, v, t
     
-    # Initialization Tests
     def test_initialization_valid(self):
         # Test with valid parameters
         a, v, t = self.generate_random_parameters()
@@ -40,7 +39,6 @@ class TestEZDiffusionModel(unittest.TestCase):
         with self.assertRaises(ValueError):
             model.tau_est
 
-    # Prediction Tests
     def test_prediction_no_noise(self):
         # Test that the bias is close to zero when no noise is introduced
         a, v, t = self.generate_random_parameters()
@@ -70,7 +68,6 @@ class TestEZDiffusionModel(unittest.TestCase):
         # Check that bias should be close to zero for a correct fit
         self.assertTrue(np.allclose(bias, np.array([0, 0, 0]), atol=0.05))
 
-    # Parameter Estimation Tests
     def test_parameter_estimation_before_fit(self):
         # Test that user cannot request parameter estimates before fitting
         model = EZDiffusionModel(v=1.5, a=1.0, t=0.2)
@@ -90,7 +87,6 @@ class TestEZDiffusionModel(unittest.TestCase):
         self.assertIsNotNone(model.alpha_est)
         self.assertIsNotNone(model.tau_est)
 
-    # Integration Tests
     def test_stability_of_fitting_process(self):
         # Ensure that fitting multiple times leads to stable parameter estimates
         a, v, t = self.generate_random_parameters()
@@ -119,7 +115,6 @@ class TestEZDiffusionModel(unittest.TestCase):
                 self.assertTrue(np.allclose(bias, np.array([0, 0, 0]), atol=0.05))
                 self.assertLess(squared_error, 0.1)
 
-    # Corruption Tests
     def test_private_attribute_access(self):
         # Test that private attributes cannot be accessed directly
         a, v, t = self.generate_random_parameters()
